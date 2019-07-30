@@ -1,14 +1,14 @@
 import setuptools
 
-with open('README.rst', 'r', 'utf-8') as f:
+with open('README.md', 'r') as f:
     readme = f.read()
 
-with open('HISTORY.rst', 'r', 'utf-8') as f:
+with open('HISTORY.md', 'r') as f:
     history = f.read()
 
 setuptools.setup(
     name="awsaccountmgr",
-    version="0.0.1",
+    version="0.0.2",
     author="Mathijs Mortimer",
     keywords="AWS Accounts",
     author_email="mathijs@mortimer.nl",
