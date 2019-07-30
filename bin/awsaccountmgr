@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+
+import yaml
+from awsaccountmgr import read_config_files, Organization, delete_default_vpc, create_boto3_client, assume_role
+import logging
+import os
+import boto3
+from argparse import ArgumentParser
+
+
+def main():
+    master_account_id, root_ou, logging_level, config_folder = parse_args()
+
+    # Set logging
+    logging_format = '%(asctime)-15s %(levelname)s %(message)s'
+    logging.basicConfig(format=logging_format, level=logging_level)
+
+    # Initialize organization
+    if boto3.client('sts').get_caller_identity().get('Account') != master_account_id:
+        logging.info(
+            f'Script not running from master account, assuming OrganizationAccountAccessRole'
+            f' in master account {master_account_id}'
+        )
+        credentials = assume_role(master_account_id)
+    else:
+        session = boto3.Session()
+        current_creds = session.get_credentials().get_frozen_credentials()
+        credentials = (
+            current_creds.access_key,
+            current_creds.secret_key,
+            current_creds.token
+        )
+
+    organization = Organization(master_account_id, root_ou, credentials)
+
+    # Parse config folder
+    accounts = read_config_files(config_folder)
+    logging.info(f"Found {len(accounts)} account(s) in configuration file.")
+
+    # Create/Update accounts
+    for account in accounts:
+        create_or_update_account(organization, account)
+
+
+def create_or_update_account(org_session, account):
+    """Creates or updates a single AWS account.
+
+    :param org_session: Instance of Organization class
+    :param account: Instance of Account class
+    """
+    # Create new account
+    account_id = org_session.get_account_id(account.full_name)
+
+    if not account_id:
+        logging.info(f'Creating new account {account.full_name}')
+        account_id = org_session.create_account(account)
+
+    # Move account to given OU
+    logging.info(f'Moving account {account_id} to OU {account.ou_path}')
+    org_session.move_account(account_id, account.ou_path)
+
+    # Remove default VPC
+    if account.delete_default_vpc is True:
+
+        ec2_client = create_boto3_client(
+            account_id,
+            'ec2',
+            org_session._master_credentials
+        )
+
+        logging.info(f'Deleting default VPC from {account_id}')
+        delete_default_vpc(ec2_client, account_id)
+
+    # Create account alias
+    logging.info(f'Creating/updating account {account_id} alias {account.alias}')
+    org_session.create_account_alias(account_id, account.alias)
+
+    # Add tags
+    if account.tags:
+        logging.info(f'Adding tags to account {account_id}: {account.tags}')
+        org_session.create_account_tags(account_id, account.tags)
+
+
+def parse_args():
+    """Parse command line arguments"""
+    parser = ArgumentParser(description='Multi account creation and management in AWS Organization.')
+
+    parser.add_argument(
+        'master_account_id',
+        help='The id of the AWS organization master account'
+    )
+    parser.add_argument(
+        'root_ou',
+        help='The ID of the root Organizational Unit (eg. r-abc1)'
+    )
+    parser.add_argument(
+        '--logging-level',
+        default="INFO",
+        help='The logging output level, defaults to INFO'
+    )
+    parser.add_argument(
+        '--config-folder',
+        default="config/",
+        help='The folder containing the account configuration files, defaults to ./config/'
+    )
+
+    args = parser.parse_args()
+    return (
+        args.master_account_id,
+        args.root_ou,
+        args.logging_level,
+        args.config_folder
+    )
+
+if __name__ == '__main__':
+    main()

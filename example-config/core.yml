@@ -1,0 +1,8 @@
+# Configuration file for creating and moving accounts within the AWS organisation
+Accounts:
+
+  - AccountFullName: myrootaccount
+    OrganizationalUnitPath: r-abc1
+    Email: myrootaccount@moorspots.com
+    Tags:
+      - CostCenter: 123456789

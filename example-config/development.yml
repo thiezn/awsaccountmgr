@@ -1,0 +1,9 @@
+# Configuration file for creating and moving accounts within the AWS organisation
+Accounts:
+   - AccountFullName: playgroundaccount
+    OrganizationalUnitPath: playground/
+    Email: playgroundaccount@moorspots.com
+
+  - AccountFullName: usdevaccount
+    OrganizationalUnitPath: us/dev
+    Email: usdevaccount@moorspots.com
