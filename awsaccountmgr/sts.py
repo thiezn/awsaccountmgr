@@ -43,7 +43,7 @@ def assume_role(account_id, role_name="OrganizationAccountAccessRole", source_ro
         sts_response["Credentials"]["SessionToken"]
     )
 
-def create_boto3_client(account_id, client_type, source_role_credentials=None):
+def create_boto3_client(account_id, client_type, source_role_credentials=None, region_name=None):
         """Creates a boto3 client associated with the account_id you want to target.
 
         The client is created by first assuming a role in the master account and from there
@@ -53,6 +53,7 @@ def create_boto3_client(account_id, client_type, source_role_credentials=None):
         :param account_id: The account_id you want to create an account in
         :param client_type: The type of boto3 client you want to create, eg. 'sts' or 'ec2'
         :param source_role_credentials: The assumed role to assume the new session from
+        :param region_name: The region to intialize in
         """
         # Assume OrganizationAccountAccessRole through Master account
         if source_role_credentials is None:
@@ -69,6 +70,7 @@ def create_boto3_client(account_id, client_type, source_role_credentials=None):
             client_type,
             aws_access_key_id=access_key_id,
             aws_secret_access_key=secret_access_key,
-            aws_session_token=session_token
+            aws_session_token=session_token,
+            region_name=region_name
         )
         return client

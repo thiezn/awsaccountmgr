@@ -62,14 +62,25 @@ def create_or_update_account(org_session, account):
     # Remove default VPC
     if account.delete_default_vpc is True:
 
-        ec2_client = create_boto3_client(
-            account_id,
-            'ec2',
-            org_session._master_credentials
-        )
+        # Retrieve all regions
+        ec2_client = boto3.client('ec2')
+        all_regions = [
+            region['RegionName']
+            for region in ec2_client.describe_regions(AllRegions=False)['Regions']
+        ]
 
-        logging.info(f'Deleting default VPC from {account_id}')
-        delete_default_vpc(ec2_client, account_id)
+        for region in all_regions:
+            # Remove VPC in given region
+            ec2_client = create_boto3_client(
+                account_id,
+                'ec2',
+                org_session._master_credentials,
+                region_name=region
+            )
+            logging.info(f'Deleting default VPC from {account_id} in region {region}')
+            delete_default_vpc(ec2_client, account_id)
+        
+        ec2_client = None  # Clear the ec2_client so we're not accidently using it with the wrong region
 
     # Create account alias
     logging.info(f'Creating/updating account {account_id} alias {account.alias}')
