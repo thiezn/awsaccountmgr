@@ -3,9 +3,8 @@ version: 0.2
 phases: 
   install: 
     commands: 
-      - pip install -r requirements.txt -q 
-      - chmod +x ./main.py 
-      - ./main.py 11223344566 r-abc1
+      - pip3 install awsaccountmgr 
+      - awsaccountmgr 11223344566 r-abc1 /path/to/my/config/directory
  
 artifacts: 
   files: '**/*'

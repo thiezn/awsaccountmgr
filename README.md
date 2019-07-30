@@ -22,9 +22,12 @@ This repository contains code that manages the process around AWS account creati
 
 ## Installation & Configuration
 
-First install the required python packages using pip
+Note we are only supporting python3.6 and up, I really like my f-strings..
+
+Install the package using pip
+
 ```bash
-pip install -r requirements.txt -q
+pip3 install awsaccountmgr
 ```
 
 Next define configuration files for the accounts you would like to manage. The default location the script looks for these config files is ./config/. You can have multiple configuration files for logical separation. The script will iterate and validate each file before sequentially creating/updating the defined accounts.
@@ -65,11 +68,11 @@ The OU name is the name of the direct parent of the account. If you want to move
 Once the configuration files are defined you can start the script locally with:
 
 ```bash
-./main.py <master_account_id> <root_ou_id>
+awsaccountmgr <master_account_id> <root_ou_id> <config folder path>
 ```
 
 You will have to have AWS credentials stored (using AWS CLI or environment variables) on your machine. If the assumed role is not resided in the master account the script will try to assume the OrganizationAccountAccessRole role in the given master account id. This is useful for people using the AWS Deployment Framework to run this script from a pipeline in the deployment account.
 
-To see all available command line options, run  ```./main.py --help```
+To see all available command line options, run  ```awsaccountmgr --help```
 
 # TODO: Describe how you can setup the AWS Deployment Framework pipeline to run this on updates and scheduled time.

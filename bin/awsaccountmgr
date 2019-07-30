@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 
 
 def main():
-    master_account_id, root_ou, logging_level, config_folder = parse_args()
+    master_account_id, root_ou, config_folder, logging_level = parse_args()
 
     # Set logging
     logging_format = '%(asctime)-15s %(levelname)s %(message)s'
@@ -93,23 +93,24 @@ def parse_args():
         'root_ou',
         help='The ID of the root Organizational Unit (eg. r-abc1)'
     )
+
+    parser.add_argument(
+        'config_folder',
+        help='The folder containing the account configuration files'
+    )
+
     parser.add_argument(
         '--logging-level',
         default="INFO",
         help='The logging output level, defaults to INFO'
-    )
-    parser.add_argument(
-        '--config-folder',
-        default="config/",
-        help='The folder containing the account configuration files, defaults to ./config/'
     )
 
     args = parser.parse_args()
     return (
         args.master_account_id,
         args.root_ou,
-        args.logging_level,
-        args.config_folder
+        args.config_folder,
+        args.logging_level
     )
 
 if __name__ == '__main__':
