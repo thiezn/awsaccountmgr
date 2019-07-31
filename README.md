@@ -68,10 +68,10 @@ The OU name is the name of the direct parent of the account. If you want to move
 Once the configuration files are defined you can start the script locally with:
 
 ```bash
-awsaccountmgr <master_account_id> <root_ou_id> <config folder path>
+awsaccountmgr <root_ou_id> <config folder path>
 ```
 
-You will have to have AWS credentials stored (using AWS CLI or environment variables) on your machine. If the assumed role is not resided in the master account the script will try to assume the OrganizationAccountAccessRole role in the given master account id. This is useful for people using the AWS Deployment Framework to run this script from a pipeline in the deployment account.
+You will have to have AWS credentials stored (using AWS CLI or environment variables) on your machine. If the assumed role is not resided in the master account the script will try to assume the OrganizationAccountAccessRole role in the master account. This is useful for people using the AWS Deployment Framework to run this script from a pipeline in the deployment account.
 
 To see all available command line options, run  ```awsaccountmgr --help```
 

@@ -6,7 +6,7 @@ from .sts import create_boto3_client
 
 class Organization:
 
-    def __init__(self, master_account_id, root_ou_id, credentials):
+    def __init__(self, root_ou_id, credentials):
         """Initialise the boto3 organisation session
 
         :param org_client: A 'organizations' boto3 client in the Master account
@@ -17,7 +17,7 @@ class Organization:
         self.root_ou_id = root_ou_id
 
         self._org_client = create_boto3_client(
-            master_account_id,
+            self.get_master_account_id(),
             'organizations',
             self._master_credentials
         )
@@ -120,6 +120,13 @@ class Organization:
             ResourceId=account_id,
             Tags=formatted_tags
         )
+
+    @staticmethod
+    def get_master_account_id():
+        """Retrieves the master account id from API"""
+        org_client = boto3.client('organizations')
+        response = org_client.describe_organization()
+        return response['Organization']['MasterAccountId']
 
     def create_account_alias(self, account_id, account_alias):
         """Creates or updates the account alias for given account_id"""

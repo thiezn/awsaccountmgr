@@ -8,7 +8,7 @@ with open('HISTORY.md', 'r') as f:
 
 setuptools.setup(
     name="awsaccountmgr",
-    version="0.0.3",
+    version="0.0.4",
     author="Mathijs Mortimer",
     keywords="AWS Accounts",
     author_email="mathijs@mortimer.nl",
@@ -18,7 +18,8 @@ setuptools.setup(
     url="https://github.com/thiezn/awsaccountmgr/",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],

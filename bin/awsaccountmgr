@@ -6,16 +6,19 @@ import logging
 import os
 import boto3
 from argparse import ArgumentParser
+from concurrent.futures import ThreadPoolExecutor
 
 
 def main():
-    master_account_id, root_ou, config_folder, logging_level = parse_args()
+    # Parse/retrieve required parameters
+    root_ou, config_folder, logging_level = parse_args()
+    master_account_id = Organization.get_master_account_id()
 
     # Set logging
     logging_format = '%(asctime)-15s %(levelname)s %(message)s'
     logging.basicConfig(format=logging_format, level=logging_level)
 
-    # Initialize organization
+    # Initialize Organization class
     if boto3.client('sts').get_caller_identity().get('Account') != master_account_id:
         logging.info(
             f'Script not running from master account, assuming OrganizationAccountAccessRole'
@@ -31,7 +34,7 @@ def main():
             current_creds.token
         )
 
-    organization = Organization(master_account_id, root_ou, credentials)
+    organization = Organization(root_ou, credentials)
 
     # Parse config folder
     accounts = read_config_files(config_folder)
@@ -69,19 +72,18 @@ def create_or_update_account(org_session, account):
             for region in ec2_client.describe_regions(AllRegions=False)['Regions']
         ]
 
-        for region in all_regions:
-            # Remove VPC in given region
-            ec2_client = create_boto3_client(
-                account_id,
-                'ec2',
-                org_session._master_credentials,
-                region_name=region
-            )
-            logging.info(f'Deleting default VPC from {account_id} in region {region}')
-            delete_default_vpc(ec2_client, account_id)
-        
-        ec2_client = None  # Clear the ec2_client so we're not accidently using it with the wrong region
-
+        # Remove VPCs from all regions using threads
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            for region in all_regions:
+                executor.submit(
+                    schedule_delete_default_vpc,
+                    (
+                    account_id,
+                    org_session,
+                    region 
+                    )
+                )
+    
     # Create account alias
     logging.info(f'Creating/updating account {account_id} alias {account.alias}')
     org_session.create_account_alias(account_id, account.alias)
@@ -92,14 +94,28 @@ def create_or_update_account(org_session, account):
         org_session.create_account_tags(account_id, account.tags)
 
 
+def schedule_delete_default_vpc(account_id, org_session, region):
+    """Schedule a delete_default_vpc on a thread
+    
+    :param account_id: The account ID to remove the VPC from
+    :param org_session: The Organization class instance
+    :param region: The name of the region the VPC is resided
+    """
+    # Remove VPC in given region
+    ec2_client = create_boto3_client(
+        account_id,
+        'ec2',
+        org_session._master_credentials,
+        region_name=region
+    )
+    logging.info(f'Deleting default VPC from {account_id} in region {region}')
+    delete_default_vpc(ec2_client, account_id)
+
+
 def parse_args():
     """Parse command line arguments"""
     parser = ArgumentParser(description='Multi account creation and management in AWS Organization.')
 
-    parser.add_argument(
-        'master_account_id',
-        help='The id of the AWS organization master account'
-    )
     parser.add_argument(
         'root_ou',
         help='The ID of the root Organizational Unit (eg. r-abc1)'
@@ -118,7 +134,6 @@ def parse_args():
 
     args = parser.parse_args()
     return (
-        args.master_account_id,
         args.root_ou,
         args.config_folder,
         args.logging_level
