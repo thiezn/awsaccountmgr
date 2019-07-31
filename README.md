@@ -1,6 +1,6 @@
 # Multi-Account management in AWS Organizations
 
-***!IMPORTANT!*** - The code has not been tested properly yet in production and no unit/integration testing have been setup yet. Use at your own risk. 
+***!IMPORTANT!*** - The code has not been tested properly yet in production and no unit/integration testing have been implemented. Use at your own risk. 
 
 This repository contains code that manages the process around AWS account creation. It assumes you are working with the [AWS Deployment Framework](https://github.com/awslabs/aws-deployment-framework) for managing deployments in a multi-account AWS organization.
 
@@ -30,7 +30,7 @@ Install the package using pip
 pip3 install awsaccountmgr
 ```
 
-Next define configuration files for the accounts you would like to manage. The default location the script looks for these config files is ./config/. You can have multiple configuration files for logical separation. The script will iterate and validate each file before sequentially creating/updating the defined accounts.
+Next define configuration files for the accounts you would like to manage. You can have multiple configuration files for logical separation. The script will iterate and validate each file before sequentially creating/updating the defined accounts.
 
 Here is an example file 
 
@@ -59,7 +59,7 @@ Accounts:
       - CostCenter: 123456789
 ```
 
-To create new accounts or to move accounts to a different OU you only have to update the relevant account config file in the /config folder and re-run the script.
+To create new accounts or move accounts to a different OU you only have to update the relevant account configuration file and re-run the script.
 
 The OU name is the name of the direct parent of the account. If you want to move an account to the root you can provide the AWS organization id (eg "r-abc1"). If you are dealing with nested organizational units you can seperate them with a / (see examples above).
 
@@ -75,4 +75,10 @@ You will have to have AWS credentials stored (using AWS CLI or environment varia
 
 To see all available command line options, run  ```awsaccountmgr --help```
 
-# TODO: Describe how you can setup the AWS Deployment Framework pipeline to run this on updates and scheduled time.
+# TODO: Describe how you can setup the AWS Deployment Framework pipeline to run this on updates and scheduled time. Quick summary:
+
+- Create cc-buildonly ADF pipeline
+- add buildspec.yml similar to example-buildspec.yml
+- Update the ADF global.yml files to ensure the deployment account is able to do organizations related stuff in the master account
+- TIP: If you add a schedule to the ADF pipeline you can reasonably ensure the accounts are configured as defined in the yaml files. 
+- TIP2: perhaps this module can be used in combination with a lambda triggered by cloudwatch events related to relevant organizations actions. This will immediately correct any changes someone does to accounts to whats being defined in the configuration files.
