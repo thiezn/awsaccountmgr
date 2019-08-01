@@ -49,7 +49,7 @@ Accounts:
 
   # Account with all available parameters
   - AccountFullName: myrootaccount
-    OrganizationalUnitPath: r-abc1
+    OrganizationalUnitPath: /
     Email: myrootaccount@moorspots.com
     DeleteDefaultVPC: True
     AllowDirectMoveBetweenOU: True

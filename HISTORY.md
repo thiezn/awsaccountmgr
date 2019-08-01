@@ -1,5 +1,8 @@
 # Release History
 
+## 0.0.6 (2019-08-01)
+- Configuration files now support '/' to target root
+
 ## 0.0.5 (2019-08-01)
 - FIX: Removing VPCs through threads working properly
 

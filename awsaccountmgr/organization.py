@@ -50,9 +50,15 @@ class Organization:
         :param parent_ou_id: The parent from where to start parsing the ou_path, defaults to root
         :return: (ou_id, parent_id)
         """
+        # Return root OU if '/' is provided
+        if ou_path.strip() == '/':
+            return self.root_ou_id
+
+        # Set initial OU to start looking for given ou_path
         if parent_ou_id is None:
             parent_ou_id = self.root_ou_id
 
+        # Parse ou_path and find the ID
         ou_hierarchy = ou_path.strip('/').split('/')
         hierarchy_index = 0
 

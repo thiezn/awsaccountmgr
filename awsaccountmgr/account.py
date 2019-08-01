@@ -24,7 +24,7 @@ class Account:
         :param full_name: Full name of the account
         :param email: Valid email address of account
         :param ou_path: Organizational Unit path. For nested OUs use / notation, eg. us/development.
-                        Use root identifier to target root OU (eg. r-abc1)
+                        Use root identifier to target root OU (eg. r-abc1) or just use '/'
 
         :param alias: Optional Alias to use, if None the alias will default to full_name
         :param delete_default_vpc: Set this to True to delete the default vpc from the account

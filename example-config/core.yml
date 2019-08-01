@@ -2,7 +2,7 @@
 Accounts:
 
   - AccountFullName: myrootaccount
-    OrganizationalUnitPath: r-abc1
+    OrganizationalUnitPath: /
     Email: myrootaccount@moorspots.com
     Tags:
       - CostCenter: 123456789
