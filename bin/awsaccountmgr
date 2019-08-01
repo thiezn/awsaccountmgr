@@ -73,17 +73,14 @@ def create_or_update_account(org_session, account):
         ]
 
         # Remove VPCs from all regions using threads
-        with ThreadPoolExecutor(max_workers=3) as executor:
-            for region in all_regions:
-                executor.submit(
-                    schedule_delete_default_vpc,
-                    (
-                    account_id,
-                    org_session,
-                    region 
-                    )
-                )
-    
+        args = (
+            (account_id, org_session, region) 
+            for region in all_regions
+        )
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(lambda f: schedule_delete_default_vpc(*f), args):
+                pass
+
     # Create account alias
     logging.info(f'Creating/updating account {account_id} alias {account.alias}')
     org_session.create_account_alias(account_id, account.alias)

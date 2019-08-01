@@ -4,7 +4,7 @@ phases:
   install: 
     commands: 
       - pip3 install awsaccountmgr 
-      - awsaccountmgr 11223344566 r-abc1 /path/to/my/config/directory
+      - awsaccountmgr r-abc1 /path/to/my/config/directory
  
 artifacts: 
   files: '**/*'

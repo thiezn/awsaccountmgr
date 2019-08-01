@@ -1,5 +1,8 @@
 # Release History
 
+## 0.0.5 (2019-08-01)
+- FIX: Removing VPCs through threads working properly
+
 ## 0.0.4 (2019-07-31)
 - Retrieving master_account_id from API
 - Deleting VPCs now using threads
