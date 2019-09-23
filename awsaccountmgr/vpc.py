@@ -16,7 +16,21 @@ def delete_default_vpc(client, account_id, dry_run=False):
         """
     # Check and remove default VPC
     default_vpc_id = None
-    vpc_response = client.describe_vpcs()
+
+    # Retrying the describe_vpcs call. Sometimes the VPC service is not ready when
+    # you have just created a new account.
+    max_retry_seconds = 180
+    while True:
+        try:
+            vpc_response = client.describe_vpcs()
+            break
+        except Exception as e:
+            logger.warning(f'Could not retrieve VPCs: {e}. Sleeping for 1 second before trying again.')
+            max_retry_seconds - 2
+            sleep(2)
+            if max_retry_seconds <= 0:
+                raise Exception("Could not describe VPCs within retry limit.")
+
     for vpc in vpc_response["Vpcs"]:
         if vpc["IsDefault"] is True:
             default_vpc_id = vpc["VpcId"]

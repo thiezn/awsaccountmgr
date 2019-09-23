@@ -1,3 +1,5 @@
+# Check the following article on how to package and upload to PyPi: https://packaging.python.org/tutorials/packaging-projects/
+
 import setuptools
 
 with open('README.md', 'r') as f:
@@ -8,7 +10,7 @@ with open('HISTORY.md', 'r') as f:
 
 setuptools.setup(
     name="awsaccountmgr",
-    version="0.0.6",
+    version="0.0.7",
     author="Mathijs Mortimer",
     keywords="AWS Accounts",
     author_email="mathijs@mortimer.nl",
@@ -22,6 +24,10 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+    ],
+    install_requires=[
+        'boto3',
+        'pyyaml'
     ],
     scripts=['bin/awsaccountmgr'],
 )

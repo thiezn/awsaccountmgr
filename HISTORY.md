@@ -1,5 +1,9 @@
 # Release History
 
+## 0.0.7 (2019-09-23)
+- setup.py now includes dependency libraries
+- FIX: describe_vpcs call sometimes failed on creating new account
+
 ## 0.0.6 (2019-08-01)
 - Configuration files now support '/' to target root
 
