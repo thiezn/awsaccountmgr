@@ -22,6 +22,15 @@ class Organization:
             self._master_credentials
         )
 
+    def list_organizational_units_for_parent(self, parent_ou):
+        """Returns a list of OUs for the given parent"""
+        organizational_units = [
+            ou
+            for org_units in self._org_client.get_paginator("list_organizational_units_for_parent").paginate(ParentId=parent_ou)
+            for ou in org_units('OrganizationalUnits')
+        ]
+        return organizational_units
+
     def list_accounts(self):
         """Retrieves all accounts in organization."""
         existing_accounts = [
@@ -63,16 +72,15 @@ class Organization:
         hierarchy_index = 0
 
         while hierarchy_index < len(ou_hierarchy):
-            response = self._org_client.list_organizational_units_for_parent(
-                ParentId=parent_ou_id,
-            )
-            for ou in response['OrganizationalUnits']:
+            org_units = self.list_organizational_units_for_parent(parent_ou_id)
+            
+            for ou in org_units:
                 if ou['Name'] == ou_hierarchy[hierarchy_index]:
                     parent_ou_id = ou['Id']
                     hierarchy_index += 1
                     break
             else:
-                raise ValueError(f'Could not find ou with name {ou_hierarchy}')
+                raise ValueError(f'Could not find ou with name {ou_hierarchy} in OU list {org_units}.')
 
         return parent_ou_id
 
