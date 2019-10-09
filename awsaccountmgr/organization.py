@@ -27,7 +27,7 @@ class Organization:
         organizational_units = [
             ou
             for org_units in self._org_client.get_paginator("list_organizational_units_for_parent").paginate(ParentId=parent_ou)
-            for ou in org_units('OrganizationalUnits')
+            for ou in org_units['OrganizationalUnits']
         ]
         return organizational_units
 

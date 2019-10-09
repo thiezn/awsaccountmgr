@@ -1,5 +1,8 @@
 # Release History
 
+## 0.0.8 (2019-10-09)
+- FIX: Using pagination when listing Org Units
+
 ## 0.0.7 (2019-09-23)
 - setup.py now includes dependency libraries
 - FIX: describe_vpcs call sometimes failed on creating new account

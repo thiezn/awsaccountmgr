@@ -10,7 +10,7 @@ with open('HISTORY.md', 'r') as f:
 
 setuptools.setup(
     name="awsaccountmgr",
-    version="0.0.7",
+    version="0.0.8",
     author="Mathijs Mortimer",
     keywords="AWS Accounts",
     author_email="mathijs@mortimer.nl",
