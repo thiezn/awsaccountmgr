@@ -1,5 +1,8 @@
 # Release History
 
+## 0.0.9 (2019-10-09)
+- FIX: AllowDirectMoveBetweenOU parameter now works as intended
+
 ## 0.0.8 (2019-10-09)
 - FIX: Using pagination when listing Org Units
 

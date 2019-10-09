@@ -60,7 +60,7 @@ def create_or_update_account(org_session, account):
 
     # Move account to given OU
     logging.info(f'Moving account {account_id} to OU {account.ou_path}')
-    org_session.move_account(account_id, account.ou_path)
+    org_session.move_account(account_id, account.ou_path, account.allow_direct_move_between_ou)
 
     # Remove default VPC
     if account.delete_default_vpc is True:

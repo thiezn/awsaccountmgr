@@ -84,12 +84,17 @@ class Organization:
 
         return parent_ou_id
 
-    def move_account(self, account_id, ou_path):
+    def move_account(self, account_id, ou_path, allow_direct_move=False):
         """Move the account to an organisation unit.
 
         Note that we are not allowing an account to move from non-root to another ou. This
         is to avoid issues with the AWS Deployment Framework that requires you to first move
         an account to root before moving to another OU.
+
+        :param account_id: ID of the account to move
+        :param ou_path: The full path to the ou in slash notation (e.g. /europe/test )
+        :param allow_direct_move: Set this to True to allow moving accounts directly between OUs
+                                  without first moving to the root OU.
         """
         if ou_path != self.root_ou_id:
             ou_id = self.get_ou_id(ou_path)
@@ -104,7 +109,7 @@ class Organization:
             # Account is already resided in ou_path
             return
 
-        if source_parent_id != self.root_ou_id and ou_id != self.root_ou_id:
+        if allow_direct_move is False and source_parent_id != self.root_ou_id and ou_id != self.root_ou_id:
             raise ValueError(
                 f"Trying to move an account from non-root OU to another OU. "
                 "Move account to root ({self.root_ou_id}) first."
