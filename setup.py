@@ -2,20 +2,20 @@
 
 import setuptools
 
-with open('README.md', 'r') as f:
+with open("README.md", "r") as f:
     readme = f.read()
 
-with open('HISTORY.md', 'r') as f:
+with open("HISTORY.md", "r") as f:
     history = f.read()
 
 setuptools.setup(
     name="awsaccountmgr",
-    version="0.0.9",
+    version="0.0.10",
     author="Mathijs Mortimer",
     keywords="AWS Accounts",
     author_email="mathijs@mortimer.nl",
     description="A command line tool for managing accounts within an AWS organization. Easy to integrate into AWS Deployment Framework",
-    long_description=readme + '\n\n' + history,
+    long_description=readme + "\n\n" + history,
     long_description_content_type="text/markdown",
     url="https://github.com/thiezn/awsaccountmgr/",
     packages=setuptools.find_packages(),
@@ -25,9 +25,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[
-        'boto3',
-        'pyyaml'
-    ],
-    scripts=['bin/awsaccountmgr'],
+    install_requires=["boto3", "pyyaml"],
+    scripts=["bin/awsaccountmgr"],
 )

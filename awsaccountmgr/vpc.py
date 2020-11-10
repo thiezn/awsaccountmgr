@@ -4,32 +4,52 @@
 Remove default VPC and related resources
 """
 import logging
+
 logger = logging.getLogger(__name__)
 from time import sleep
 
 
-def delete_default_vpc(client, account_id, dry_run=False):
-    """Delete the default VPC in the given account id
+def retry_function(function, max_retry_seconds=180):
+    """Helper function to retry describe VPC related actions.
 
-        :param client: EC2 boto3 client instance
-        :param account_id: AWS account id
-        """
-    # Check and remove default VPC
-    default_vpc_id = None
+    Retrying the given describe_* call. Sometimes the VPC service
+    is not ready when you've just created a new account.
 
-    # Retrying the describe_vpcs call. Sometimes the VPC service is not ready when
-    # you have just created a new account.
-    max_retry_seconds = 180
+    :param function: The function to call. NOTE: don't execute it but
+                     pass it like client.describe_vpcs   without the closing brackets()
+    :param max_retry_seconds: Maximum amount of seconds to try
+
+    :return: The response of the function call
+    """
     while True:
         try:
-            vpc_response = client.describe_vpcs()
+            response = function()
             break
         except Exception as e:
-            logger.warning(f'Could not retrieve VPCs: {e}. Sleeping for 1 second before trying again.')
+            logger.warning(
+                f"Error running {function.__name__}: {e}. Sleeping for 2 second before trying again."
+            )
             max_retry_seconds - 2
             sleep(2)
             if max_retry_seconds <= 0:
-                raise Exception("Could not describe VPCs within retry limit.")
+                raise Exception(
+                    f"Could not successfully execute function {function.__name__} "
+                    f"within retry limit {max_retry_seconds}."
+                )
+
+    return response
+
+
+def delete_default_vpc(client, account_id, dry_run=False):
+    """Delete the default VPC in the given account id.
+
+    :param client: EC2 boto3 client instance
+    :param account_id: AWS account id
+    """
+    # Check and remove default VPC
+    default_vpc_id = None
+
+    vpc_response = retry_function(client.describe_vpcs)
 
     for vpc in vpc_response["Vpcs"]:
         if vpc["IsDefault"] is True:
@@ -41,7 +61,8 @@ def delete_default_vpc(client, account_id, dry_run=False):
         return
 
     logging.info(f"Found default VPC Id {default_vpc_id}")
-    subnet_response = client.describe_subnets()
+    subnet_response = retry_function(client.describe_subnets)
+
     default_subnets = [
         subnet
         for subnet in subnet_response["Subnets"]
@@ -49,12 +70,12 @@ def delete_default_vpc(client, account_id, dry_run=False):
     ]
 
     logging.info(f"Deleting default {len(default_subnets )} subnets")
-    subnet_delete_response = [
+    _ = [
         client.delete_subnet(SubnetId=subnet["SubnetId"], DryRun=dry_run)
         for subnet in default_subnets
     ]
 
-    igw_response = client.describe_internet_gateways()
+    igw_response = retry_function(client.describe_internet_gateways)
     try:
         default_igw = [
             igw["InternetGatewayId"]
@@ -67,14 +88,12 @@ def delete_default_vpc(client, account_id, dry_run=False):
 
     if default_igw:
         logging.info(f"Detaching Internet Gateway {default_igw}")
-        detach_default_igw_response = client.detach_internet_gateway(
+        _ = client.detach_internet_gateway(
             InternetGatewayId=default_igw, VpcId=default_vpc_id, DryRun=dry_run
         )
 
         logging.info(f"Deleting Internet Gateway {default_igw}")
-        delete_internet_gateway_response = client.delete_internet_gateway(
-            InternetGatewayId=default_igw
-        )
+        _ = client.delete_internet_gateway(InternetGatewayId=default_igw)
 
     sleep(10)  # It takes a bit of time for the dependencies to clear
     logging.info(f"Deleting Default VPC {default_vpc_id}")
