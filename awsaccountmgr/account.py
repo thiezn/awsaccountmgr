@@ -24,22 +24,22 @@ class AlternateContact:
         if name:
             self.name = name
         else:
-            self.name = "N/A"
+            self.name = "NotApplicable"
 
         if email:
             self.email = email
         else:
-            self.email = "N/A"
+            self.email = "not@applicable.com"
 
         if phone:
             self.phone = str(phone)
         else:
-            self.phone = "N/A"
+            self.phone = "NotApplicable"
 
         if title:
             self.title = title
         else:
-            self.title = "N/A"
+            self.title = "NotApplicable"
 
     @classmethod
     def load_from_config(cls, contact_type, config):

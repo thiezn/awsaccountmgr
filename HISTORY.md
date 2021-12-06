@@ -1,5 +1,9 @@
 # Release History
 
+## 0.0.13 (2021-12-06)
+
+- FIX: / is an invalid character for Alternate contact fields. Defaulting to NotApplicable and not@applicable.com
+
 ## 0.0.12 (2021-12-06)
 
 - FIX: all alternate contact fields are mandatory. Defaulting to N/A when not provided
