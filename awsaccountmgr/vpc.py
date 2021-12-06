@@ -1,8 +1,4 @@
-"""
-# vpc.py
-
-Remove default VPC and related resources
-"""
+"""Remove default VPC and related resources."""
 import logging
 
 logger = logging.getLogger(__name__)

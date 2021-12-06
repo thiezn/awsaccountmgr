@@ -1,5 +1,10 @@
 # Release History
 
+## 0.0.11 (2021-12-06)
+
+- Added capability to update AWS account alternate contacts
+- FIX: configuration example showed Tags as dict items, corrected to list of dicts
+
 ## 0.0.10 (2020-11-10)
 
 - FIX: Retrying subnet and IGW describe calls. Sometimes they are not yet available after a new account creation.
