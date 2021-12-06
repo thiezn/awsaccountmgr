@@ -1,5 +1,9 @@
 # Release History
 
+## 0.0.15 (2021-12-06)
+
+- FIX: Avoid raising an error when trying to remove an alternate contact thats non existing
+
 ## 0.0.14 (2021-12-06)
 
 - FIX: The API has a more strict formatting for the phone field. Default to "00000000" when phone field is not provided

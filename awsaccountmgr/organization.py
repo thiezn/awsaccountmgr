@@ -170,9 +170,14 @@ class Organization:
         if contact_type.upper() not in ["BILLING", "OPERATIONS", "SECURITY"]:
             raise ValueError(f"Contact type {contact_type} is not supported.")
 
-        self._account_client.delete_alternate_contact(
-            AccountId=account_id, AlternateContactType=contact_type.upper()
-        )
+        try:
+            self._account_client.delete_alternate_contact(
+                AccountId=account_id, AlternateContactType=contact_type.upper()
+            )
+        except Exception:
+            # Alternate contact doesn't exist, but botocore exception doesn't
+            # seem to be published: botocore.errorfactory.ResourceNotFoundException
+            pass
 
     def update_alternate_contact(
         self, account_id: str, contact_type: str, contact_details: AlternateContact
