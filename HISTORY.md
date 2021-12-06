@@ -1,5 +1,9 @@
 # Release History
 
+## 0.0.12 (2021-12-06)
+
+- FIX: all alternate contact fields are mandatory. Defaulting to N/A when not provided
+
 ## 0.0.11 (2021-12-06)
 
 - Added capability to update AWS account alternate contacts

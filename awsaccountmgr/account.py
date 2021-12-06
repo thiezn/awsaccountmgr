@@ -18,17 +18,28 @@ class AlternateContact:
         title: str = None,
     ):
         """Initialize AlternateContact."""
+
         self.type = contact_type
-        self.name = name
-        self.email = email
+
+        if name:
+            self.name = name
+        else:
+            self.name = "N/A"
+
+        if email:
+            self.email = email
+        else:
+            self.email = "N/A"
 
         if phone:
-            # Ensuring phone numbers are string
             self.phone = str(phone)
         else:
-            self.phone = None
+            self.phone = "N/A"
 
-        self.title = title
+        if title:
+            self.title = title
+        else:
+            self.title = "N/A"
 
     @classmethod
     def load_from_config(cls, contact_type, config):
