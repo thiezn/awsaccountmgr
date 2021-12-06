@@ -170,14 +170,24 @@ class Organization:
         if contact_type.upper() not in ["BILLING", "OPERATIONS", "SECURITY"]:
             raise ValueError(f"Contact type {contact_type} is not supported.")
 
-        try:
-            self._account_client.delete_alternate_contact(
-                AccountId=account_id, AlternateContactType=contact_type.upper()
-            )
-        except Exception:
-            # Alternate contact doesn't exist, but botocore exception doesn't
-            # seem to be published: botocore.errorfactory.ResourceNotFoundException
-            pass
+        if account_id == self.get_master_account_id():
+            try:
+                self._account_client.delete_alternate_contact(
+                    AlternateContactType=contact_type.upper()
+                )
+            except Exception:
+                # Alternate contact doesn't exist, but botocore exception doesn't
+                # seem to be published: botocore.errorfactory.ResourceNotFoundException
+                pass
+        else:
+            try:
+                self._account_client.delete_alternate_contact(
+                    AccountId=account_id, AlternateContactType=contact_type.upper()
+                )
+            except Exception:
+                # Alternate contact doesn't exist, but botocore exception doesn't
+                # seem to be published: botocore.errorfactory.ResourceNotFoundException
+                pass
 
     def update_alternate_contact(
         self, account_id: str, contact_type: str, contact_details: AlternateContact
@@ -192,14 +202,24 @@ class Organization:
         if contact_type.upper() not in ["BILLING", "OPERATIONS", "SECURITY"]:
             raise ValueError(f"Contact type {contact_type} is not supported.")
 
-        self._account_client.put_alternate_contact(
-            AccountId=account_id,
-            AlternateContactType=contact_type,
-            EmailAddress=contact_details.email,
-            Name=contact_details.name,
-            PhoneNumber=contact_details.phone,
-            Title=contact_details.title,
-        )
+        if account_id == self.get_master_account_id():
+            self._account_client.put_alternate_contact(
+                AlternateContactType=contact_type,
+                EmailAddress=contact_details.email,
+                Name=contact_details.name,
+                PhoneNumber=contact_details.phone,
+                Title=contact_details.title,
+            )
+
+        else:
+            self._account_client.put_alternate_contact(
+                AccountId=account_id,
+                AlternateContactType=contact_type,
+                EmailAddress=contact_details.email,
+                Name=contact_details.name,
+                PhoneNumber=contact_details.phone,
+                Title=contact_details.title,
+            )
 
     def create_account(self, account: Account):
         """Creates a new the account if it doesn't exist.

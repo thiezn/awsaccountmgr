@@ -1,5 +1,9 @@
 # Release History
 
+## 0.0.16 (2021-12-06)
+
+- FIX: Use standalone context for updating master account
+
 ## 0.0.15 (2021-12-06)
 
 - FIX: Avoid raising an error when trying to remove an alternate contact thats non existing
