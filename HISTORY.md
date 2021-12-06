@@ -1,5 +1,9 @@
 # Release History
 
+## 0.0.14 (2021-12-06)
+
+- FIX: The API has a more strict formatting for the phone field. Default to "00000000" when phone field is not provided
+
 ## 0.0.13 (2021-12-06)
 
 - FIX: / is an invalid character for Alternate contact fields. Defaulting to NotApplicable and not@applicable.com

@@ -34,7 +34,7 @@ class AlternateContact:
         if phone:
             self.phone = str(phone)
         else:
-            self.phone = "NotApplicable"
+            self.phone = "0000000000"
 
         if title:
             self.title = title
